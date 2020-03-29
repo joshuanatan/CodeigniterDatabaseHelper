@@ -9,6 +9,16 @@
 #Add to autoload /application/config/autoload.php
 #Call these functions from your controller/model [ex: insertRow("tbl_user",array("id_user"=>"001","user_name"=>"joshua"))]
 
+
+#insertRow = Script to help you insert data to database
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#data = Key-Value Array, Data will be inserted. [ex: array("username" => "Joshua Natan")] 
+
+#return
+#latest inserted id (using auto increment in database)
+
 if ( ! function_exists('insertRow')){
     function insertRow($table,$data){
         $CI =& get_instance();
@@ -16,12 +26,13 @@ if ( ! function_exists('insertRow')){
         return $CI->db->insert_id();
     }
 }
-if ( ! function_exists('insertRowNoReturn')){
-    function insertRowNoReturn($table,$data){
-        $CI =& get_instance();
-        $CI->db->insert($table,$data);
-    }
-}
+
+#updateRow= Script to help you update data to database
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#data = Key-Value Array, Data will be updated. [ex: array("username" => "Joshua Natan")] 
+#where = Key-Value Array, Condition. [ex: array("id_user" => "001")]
 
 if ( ! function_exists('updateRow')){
     function updateRow($table,$data,$where){
@@ -30,12 +41,31 @@ if ( ! function_exists('updateRow')){
     }
 }
 
+#deleteRow= Script to help you delete data from database
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#where = Key-Value Array, Condition. [ex: array("id_user" => "001")]
+
 if ( ! function_exists('deleteRow')){
     function deleteRow($table,$where){
         $CI =& get_instance();
         $CI->db->delete($table,$where);
     }
 }
+
+#selectRow= Script to help you select data from database
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#where = Key-Value Array, Condition. [ex: array("id_user" => "001")]
+#field = String Array, Column that will be selected [ex: array("col1","col2","col3")]
+#limit = Integer, Amount of data will be selected [ex:1]
+#offset = Integer, Start select from.. [ex:10] (start from 10)
+#order = String, Column Name (ex: "id_user")
+#order_direction = String, order direction (ASC/DESC)
+#group_by = String Array, Column that will be grouped by [ex: array("col1","col2")]
+#like = Key-Value Array, Condition like [ex: array("id_user" => "01")]
 
 if ( ! function_exists('selectRow')){
     function selectRow($table,$where = "",$field = "",$limit = "",$offset = "",$order = "", $order_direction = "",$group_by = "",$like = "",$or_like = "", $or_where = ""){
@@ -77,6 +107,16 @@ if ( ! function_exists('selectRow')){
         return $CI->db->get($table);
     }
 }
+
+#isExistsInTable= Script to help you check whether data is existed in database or not.
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#where = Key-Value Array, Condition. [ex: array("id_user" => "001")]
+
+#return
+#true if exists, false otherwise
+
 if ( ! function_exists('isExistsInTable')){
     function isExistsInTable($table,$where){
         $CI =& get_instance();
@@ -87,6 +127,14 @@ if ( ! function_exists('isExistsInTable')){
         else return false; /*not exists*/
     }   
 }
+
+#getMaxId= Script to help you get the latest ID (last ID + 1)
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#column = String, Primary key column (ex: "id_user")
+#where = Key-Value Array, Condition. [ex: array("status_user" => "ACTIVE")]
+
 if ( ! function_exists('getMaxId')){
     function getMaxId($table,$coloumn,$where){
         $CI =& get_instance();
@@ -100,6 +148,17 @@ if ( ! function_exists('getMaxId')){
         }
     }   
 }
+
+#get1Value= Script to help you get specific data with certain condition 
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#column = String, Primary key column (ex: "id_user")
+#where = Key-Value Array, Condition. [ex: array("status_user" => "ACTIVE")]
+
+#return
+#String, only 1 data that match the condition
+
 if ( ! function_exists('get1Value')){
     function get1Value($table,$coloumn,$where){
         $CI =& get_instance();
@@ -112,6 +171,17 @@ if ( ! function_exists('get1Value')){
         return false;
     }
 }
+
+#getAmount= Script to help you get amount of data with certain condition (count function)
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#column = String, Primary key column (ex: "id_user")
+#where = Key-Value Array, Condition. [ex: array("status_user" => "ACTIVE")]
+
+#return
+#int, amount of data
+
 if ( ! function_exists('getAmount')){
     function getAmount($table,$coloumn,$where){
         $CI =& get_instance();
@@ -121,6 +191,17 @@ if ( ! function_exists('getAmount')){
         return $result->num_rows(); /*karena yang penting bukan di count dari sqlnya melainkan jumlah row yang didapat dari query ini*/
     }
 }
+
+#getAmount= Script to help you get a sum of data with certain condition (sum function)
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#column = String, Primary key column (ex: "id_user")
+#where = Key-Value Array, Condition. [ex: array("status_user" => "ACTIVE")]
+
+#return
+#int/float, depends of data that is summed
+
 if ( ! function_exists('getTotal')){
     function getTotal($table,$coloumn,$where){
         $CI =& get_instance();
@@ -137,6 +218,27 @@ if ( ! function_exists('getTotal')){
             return 0;
     }
 }
+
+#selectRowBetweenDates= Script to help you get data between 2 dates condition. This script is intended to be used for a table structure like below.
+/*
+activity  | activity_date
+activity1 | 01-03-2019
+activity2 | 05-03-2019
+activity3 | 08-03-2019
+*/
+#cont.. And you want to know what activity you've done between 05-03-2019 and 08-03-2019.
+
+#Arguments
+#table = String, Table Name (ex: "tbl_user")
+#kolom_tgl = String, column that holds date condition
+#constraint = Key-Value Array, Date values [ex: array("awal"=>"01-01-2019","akhir"=>"31-12-2019")] Please using your own database date-format (it could be dd-mm-yyyy / yyyy-mm-dd / mm-dd-yyyy)
+#where = Key-Value Array, Condition. [ex: array("status_user" => "ACTIVE")]
+#field = String Array, Column that will be selected [ex: array("col1","col2","col3")]
+#group_by = String Array, Column that will be grouped by [ex: array("col1","col2")]
+
+#return
+#data between given dates
+
 if(! function_exists('selectRowBetweenDates')){
     function selectRowBetweenDates($table,$kolom_tgl,$constraint,$where,$field = "",$group_by = ""){
         $CI =& get_instance();
@@ -150,16 +252,12 @@ if(! function_exists('selectRowBetweenDates')){
         return $CI->db->get_where($table,$where);
     }
 }
-if(! function_exists('selectLike')){
-    function selectLike($table,$like,$where,$limit = 0){
-        $CI =& get_instance();
-        $CI->db->like($like[0],$like[1],$like[2]);
-        if($limit != 0){
-            $CI->db->limit($limit);
-        }
-        return $CI->db->get_where($table,$where);
-    }
-}
+
+#executeQuery= Script to help you execute queries.
+
+#Arguments
+#query = String, Executabe query (execute first in your DBMS to know whether the query is valid or not) [ex: "select col1,col2,col3 from tbl_user where id_user = '123'"]
+
 if(! function_exists('executeQuery')){
     function executeQuery($query){
         
